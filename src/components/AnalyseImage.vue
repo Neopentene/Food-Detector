@@ -17,17 +17,25 @@
         <p>Image Results</p>
       </div>
       <div id="modal-body" class="center-content column">
-        <img v-if="srcAdded" :src="imgSrc" alt="Image" />
-        <p v-else>No image uploaded</p>
-
         <div
           v-if="requestStatus && !isListEmpty"
+          type="1"
           class="center-content column"
-          style="text-align: center; padding: 0.5rem"
+          style="padding: 0.5rem; position: absolute; top: 0; right: 0; left: 0"
         >
-          <h5>The image corresponds to the following dishes</h5>
-          <ul id="itemList">
-            <li v-for="names in nameOfDishes" :key="names.name">
+          <img
+            :src="imgSrc"
+            alt="image"
+            style="max-width: 90%; max-height=18rem; padding: 1rem"
+          />
+          The image corresponds to the following dishes:
+          <hr />
+          <ul type="1" style="width: 90%">
+            <li
+              v-for="names in nameOfDishes"
+              :key="names.name"
+              style="word-break: break-word"
+            >
               {{ names.name }}
             </li>
           </ul>
@@ -37,7 +45,7 @@
           class="center-content"
           style="text-align: center; padding: 0.5rem"
         >
-          <p>The image uploaded is not a food item</p>
+          <p>{{ error }}</p>
         </div>
 
         <div v-if="loading" id="loading"></div>
@@ -65,11 +73,15 @@ export default class AnalyseImage extends Vue {
   requestStatus: Boolean = false;
   isListEmpty: Boolean = true;
   nameOfDishes: Array<any> = [];
+  stringOfDishes: String = "";
+  error: String = "";
   private imageFile!: File;
 
   async analyseImageFromLogmeal(imageFile: File) {
-    console.log(imageFile);
-    return new Promise<{ results: Array<any> }>(function(resolve, reject) {
+    return new Promise<{ results: Array<any>; object: any }>(function(
+      resolve,
+      reject
+    ) {
       let xhr = new XMLHttpRequest(),
         formData = new FormData();
       formData.append("image", imageFile);
@@ -78,15 +90,16 @@ export default class AnalyseImage extends Vue {
           results: <Array<any>>(
             JSON.parse(xhr.responseText!).recognition_results
           ),
+          object: JSON.parse(xhr.responseText!),
         });
       };
 
       xhr.onerror = function() {
-        reject({ results: [] });
+        reject({ results: [], object: JSON.parse(xhr.responseText!) });
       };
 
       xhr.onabort = function() {
-        reject({ results: [] });
+        reject({ results: [], object: JSON.parse(xhr.responseText!) });
       };
       xhr.open("POST", "https://api.logmeal.es/v2/recognition/dish");
       xhr.setRequestHeader(
@@ -100,6 +113,7 @@ export default class AnalyseImage extends Vue {
   async analyseImage() {
     this.loading = true;
     this.requestStatus = false;
+    this.stringOfDishes = "";
     const result = await this.analyseImageFromLogmeal(this.imageFile).then(
       function(result) {
         return result;
@@ -114,10 +128,19 @@ export default class AnalyseImage extends Vue {
     } else {
       this.isListEmpty = true;
     }
-    this.nameOfDishes = result;
+    this.nameOfDishes = result.results;
     this.requestStatus = true;
+
+    if (result.results == undefined) {
+      console.log(result);
+      if (result.object.message != undefined) {
+        this.error = result.object.message;
+      } else {
+        this.error = "Some error occurred";
+      }
+    }
+
     this.loading = false;
-    console.log(result, this.isListEmpty, this.requestStatus);
   }
 
   setData(imageFile: File) {
@@ -171,14 +194,8 @@ export default class AnalyseImage extends Vue {
 #modal-body {
   height: 20rem;
   max-height: 20rem;
-}
-
-#modal-body > img {
-  padding: 0.25rem;
-  max-width: 100%;
-  max-height: 18rem;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  position: relative;
+  overflow: auto;
 }
 
 #modal-footer {
@@ -212,11 +229,6 @@ export default class AnalyseImage extends Vue {
   border-top-color: hsl(208, 31%, 35%);
   animation: spin 1s ease-in-out infinite;
   -webkit-animation: spin 1s ease-in-out infinite;
-}
-
-#itemList {
-  list-style: none;
-  text-align: center;
 }
 
 @keyframes spin {
