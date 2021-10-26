@@ -78,7 +78,7 @@ import AnalyseImage from "./components/AnalyseImage.vue";
 })
 export default class App extends Vue {
   title: String = "Food Detector";
-  fileExtensions: String = "image/*";
+  fileExtensions: String = "image/jpg";
   labelState: String = "Upload Image";
   fileString: String = "No file has been selected";
   imgSrc: String | ArrayBuffer = "";
@@ -147,7 +147,10 @@ export default class App extends Vue {
     );
 
     this.imgSrc = result.result;
-    if (this.imgSrc != "" && /^image\//gm.test(result.type.toString())) {
+    if (
+      this.imgSrc != "" &&
+      /^image\/jpg|jpeg/gm.test(result.type.toString())
+    ) {
       this.fileString = result.name;
       this.labelState = "Image Uploaded";
       this.srcAdded = true;
@@ -157,7 +160,9 @@ export default class App extends Vue {
       this.labelState = "Upload Image";
       this.srcAdded = false;
       this.setError(
-        "Please select an image not (" + result.type.split("/")[1] + " file)"
+        "Please select an image of type jpg/jpeg not (" +
+          result.type.split("/")[1] +
+          " file)"
       );
     }
   }
