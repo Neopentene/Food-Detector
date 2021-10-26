@@ -164,9 +164,9 @@ export default class AnalyseImage extends Vue {
   width: 90%;
   max-width: 45rem;
   position: absolute;
-  top: 40%;
+  top: 20%;
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -110%);
   background-color: hsl(47, 44%, 89%);
   animation-name: fade-in;
   animation-fill-mode: forwards;
@@ -249,7 +249,7 @@ export default class AnalyseImage extends Vue {
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0%);
   }
 }
 </style>
