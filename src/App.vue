@@ -78,7 +78,7 @@ import AnalyseImage from "./components/AnalyseImage.vue";
 })
 export default class App extends Vue {
   title: String = "Food Detector";
-  fileExtensions: String = "image/jpg";
+  fileExtensions: String = "image/*";
   labelState: String = "Upload Image";
   fileString: String = "No file has been selected";
   imgSrc: String | ArrayBuffer = "";
