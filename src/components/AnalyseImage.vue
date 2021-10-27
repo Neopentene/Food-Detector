@@ -141,7 +141,6 @@ export default class AnalyseImage extends Vue {
     this.requestStatus = true;
 
     if (result.results == undefined) {
-      console.log(result);
       if (result.object.message != undefined) {
         this.error = result.object.message;
       } else {

@@ -102,11 +102,11 @@ export default class App extends Vue {
     type: String;
   }> {
     const file: File = (<HTMLInputElement>this.$refs.foodImg).files![0];
-    this.imageFile = file;
     return new Promise<{
       result: String | ArrayBuffer;
       name: String;
       type: String;
+      file: File | null;
     }>(function(resolve, reject) {
       if (file) {
         const fileReader = new FileReader();
@@ -116,6 +116,7 @@ export default class App extends Vue {
             result: this.result!,
             name: file.name,
             type: file.type,
+            file: file,
           });
         };
 
@@ -124,6 +125,7 @@ export default class App extends Vue {
             result: "",
             name: "No file has been selected",
             type: "",
+            file: null,
           });
         };
 
@@ -132,6 +134,7 @@ export default class App extends Vue {
             result: "",
             name: "No file has been selected",
             type: "",
+            file: null,
           });
         };
 
@@ -145,6 +148,7 @@ export default class App extends Vue {
       result: String | ArrayBuffer;
       name: String;
       type: String;
+      file: File | null;
     } = await this.getFileData().then(
       function(imageSrc) {
         return imageSrc;
@@ -155,11 +159,24 @@ export default class App extends Vue {
     );
 
     this.imgSrc = result.result;
-    if (
-      this.imgSrc != "" &&
-      /^image\/jpg|jpeg/gm.test(result.type.toString())
-    ) {
+    if (this.imgSrc != "" && /^image\//gm.test(result.type.toString())) {
       this.fileString = result.name;
+      try {
+        this.imageFile = await this.compressOrSetImageFile(result).then(
+          function(file) {
+            return file;
+          },
+          function() {
+            throw "Some error occurred";
+          }
+        );
+      } catch (error) {
+        this.fileString = "No file has been selected";
+        this.labelState = "Upload Image";
+        this.srcAdded = false;
+        this.setError("The Uploaded File seems to be corrupted or incorrect");
+        throw error;
+      }
       this.labelState = "Image Uploaded";
       this.srcAdded = true;
     } else {
@@ -168,11 +185,57 @@ export default class App extends Vue {
       this.labelState = "Upload Image";
       this.srcAdded = false;
       this.setError(
-        "Please select an image of type jpg/jpeg not (" +
-          result.type.split("/")[1] +
-          " file)"
+        "Please select an image not (" + result.type.split("/")[1] + " file)"
       );
     }
+  }
+
+  async compressOrSetImageFile(result: {
+    result: String | ArrayBuffer;
+    name: String;
+    type: String;
+    file: File | null;
+  }): Promise<File> {
+    return new Promise<File>(function(resolve, reject) {
+      const img = <HTMLImageElement>document.createElement("img");
+      const imgURL = result.result.toString();
+
+      img.onload = function() {
+        const canvas = <HTMLCanvasElement>document.createElement("canvas");
+        canvas.height = img.naturalHeight;
+        canvas.width = img.naturalWidth;
+
+        const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
+
+        ctx.drawImage(img, 0, 0);
+
+        const sizeRatio =
+          result.file?.size != undefined && result.file.size > 1000000
+            ? 1000000 / result.file.size
+            : 1;
+        canvas.toBlob(
+          function(blob) {
+            const file = new File([blob ? blob : new Blob()], "image.jpg", {
+              type: "image/jpeg",
+              lastModified: new Date().getDate(),
+            });
+            resolve(file);
+          },
+          "image/jpeg",
+          sizeRatio
+        );
+      };
+
+      img.onerror = function() {
+        reject();
+      };
+
+      img.onabort = function() {
+        reject();
+      };
+
+      img.src = imgURL;
+    });
   }
 
   setError(msg: String) {
