@@ -1,4 +1,7 @@
 # food-detector
+This project is not an original idea. The idea can be credited to one of my classmate.
+The bearer authorization token in App.vue file inside src branch can be changed to your own bearer token.
+To get a bearer token register your account at https://www.logmeal.es/
 
 ## Project setup
 ```
@@ -14,6 +17,8 @@ npm run serve
 ```
 npm run build
 ```
+
+### The dist directory contains ready to be deployed build for food detector
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
