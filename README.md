@@ -23,6 +23,5 @@ npm run build
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-```
+
 The website is live at https://food-detector.000webhostapp.com/
-```
