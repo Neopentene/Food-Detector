@@ -2,7 +2,7 @@
   <div class="center-content">
     <button
       v-if="srcAdded"
-      @click="setData(imgFile)"
+      @click="setData(imgFile, bearer)"
       class="theme-btn rounded"
       style="padding: 0.4rem 0.5rem"
     >
@@ -65,19 +65,28 @@ import { Options, Vue } from "vue-class-component";
     imgSrc: String,
     imgFile: File,
     srcAdded: Boolean,
+    bearer: String,
   },
 })
 export default class AnalyseImage extends Vue {
-  modalView: Boolean = false;
-  loading: Boolean = false;
-  requestStatus: Boolean = false;
-  isListEmpty: Boolean = true;
-  nameOfDishes: Array<any> = [];
-  stringOfDishes: String = "";
-  error: String = "";
+  private modalView: Boolean = false;
+  private loading: Boolean = false;
+
+  public Bearer: String = "";
+
+  private requestStatus: Boolean = false;
+  private isListEmpty: Boolean = true;
+
+  private nameOfDishes: Array<any> = [];
+
+  private error: String = "";
+
   private imageFile!: File;
 
-  async analyseImageFromLogmeal(imageFile: File) {
+  async analyseImageFromLogmeal(
+    imageFile: File,
+    Bearer: String
+  ): Promise<{ results: Array<any>; object: any }> {
     return new Promise<{ results: Array<any>; object: any }>(function(
       resolve,
       reject
@@ -102,10 +111,7 @@ export default class AnalyseImage extends Vue {
         reject({ results: [], object: JSON.parse(xhr.responseText!) });
       };
       xhr.open("POST", "https://api.logmeal.es/v2/recognition/dish");
-      xhr.setRequestHeader(
-        "Authorization",
-        "Bearer c596d7293255a043c3bfbea974432951f5b4462a"
-      );
+      xhr.setRequestHeader("Authorization", Bearer.toString());
       xhr.send(formData);
     });
   }
@@ -113,8 +119,11 @@ export default class AnalyseImage extends Vue {
   async analyseImage() {
     this.loading = true;
     this.requestStatus = false;
-    this.stringOfDishes = "";
-    const result = await this.analyseImageFromLogmeal(this.imageFile).then(
+
+    const result = await this.analyseImageFromLogmeal(
+      this.imageFile,
+      this.Bearer
+    ).then(
       function(result) {
         return result;
       },
@@ -143,16 +152,21 @@ export default class AnalyseImage extends Vue {
     this.loading = false;
   }
 
-  setData(imageFile: File) {
+  setData(imageFile: File, Bearer: String) {
     this.imageFile = imageFile;
+    this.Bearer = Bearer;
     this.showModal();
   }
 
   showModal() {
     this.modalView = true;
     this.analyseImage();
-    //console.log(this.imageSrc);
   }
+
+  getBearer() {
+    return this.Bearer;
+  }
+
   closeModal() {
     this.modalView = false;
   }
@@ -171,7 +185,7 @@ export default class AnalyseImage extends Vue {
   animation-name: fade-in;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in;
-  animation-duration: 500ms;
+  animation-duration: 350ms;
   opacity: 0;
 }
 

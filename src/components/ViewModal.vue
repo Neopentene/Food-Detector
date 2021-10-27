@@ -41,7 +41,7 @@ export default class ViewModal extends Vue {
   animation-name: fade-in;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in;
-  animation-duration: 500ms;
+  animation-duration: 350ms;
   opacity: 0;
 }
 

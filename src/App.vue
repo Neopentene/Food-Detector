@@ -62,6 +62,7 @@
     :imgFile="imageFile"
     :imgSrc="imgSrc"
     :srcAdded="srcAdded"
+    :bearer="Bearer"
   />
 </template>
 
@@ -79,13 +80,20 @@ import AnalyseImage from "./components/AnalyseImage.vue";
 export default class App extends Vue {
   title: String = "Food Detector";
   fileExtensions: String = "image/*";
+
   labelState: String = "Upload Image";
   fileString: String = "No file has been selected";
+
   imgSrc: String | ArrayBuffer = "";
+
   srcAdded: Boolean = false;
   modalView: Boolean = false;
   error: Boolean = false;
+
   errorText: String = "No Errors";
+
+  Bearer: String = "Bearer c596d7293255a043c3bfbea974432951f5b4462a";
+
   private imageFile!: File;
 
   async getFileData(): Promise<{
