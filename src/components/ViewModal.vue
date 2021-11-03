@@ -1,14 +1,16 @@
 <template>
-  <div id="modal-wrapper" class="center-content column rounded">
-    <div id="modal-header" class="center-content">
-      <p>Image Preview</p>
-    </div>
-    <div id="modal-body" class="center-content">
-      <img v-if="srcAdded" :src="imgSrc" alt="Image" />
-      <p v-else>No image was uploaded</p>
-    </div>
-    <div id="modal-footer">
-      <button @click="closeModal">Close</button>
+  <div class="popUp-wrapper center-content">
+    <div id="modal-wrapper" class="center-content column rounded">
+      <div id="modal-header" class="center-content">
+        <p>Image Preview</p>
+      </div>
+      <div id="modal-body" class="center-content">
+        <img v-if="srcAdded" :src="imgSrc" alt="Image" />
+        <p v-else>No image was uploaded</p>
+      </div>
+      <div id="modal-footer">
+        <button @click="closeModal">Close</button>
+      </div>
     </div>
   </div>
 </template>
@@ -30,14 +32,19 @@ export default class ViewModal extends Vue {
 </script>
 
 <style scoped>
+.popUp-wrapper {
+  background: hsla(223, 43%, 8%, 0.9);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 #modal-wrapper {
   width: 90%;
   max-width: 45rem;
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -110%);
-  background-color: hsl(47, 44%, 89%);
+  background-color: hsl(202, 12%, 73%);
   animation-name: fade-in;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in;
@@ -46,7 +53,7 @@ export default class ViewModal extends Vue {
 }
 
 #modal-wrapper * {
-  color: hsl(208, 31%, 35%);
+  color: hsl(223, 43%, 8%);
 }
 
 #modal-header,
@@ -73,35 +80,36 @@ export default class ViewModal extends Vue {
 }
 
 #modal-footer {
-  padding: 0.5rem;
+  padding: 0.25rem;
   width: 100%;
 }
 
 #modal-footer > button {
-  padding: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  border: none;
   margin: 0.5rem 1.5rem 0.5rem 0.5rem;
   float: right;
   border-radius: 0.35rem;
-  background-color: hsl(47, 44%, 89%);
-  border: 2px solid hsl(208, 31%, 35%);
+  background-color: hsl(208, 31%, 35%);
+  color: hsl(86, 8%, 82%);
 }
 
 #modal-footer > button:hover {
-  border-color: hsl(223, 43%, 8%);
+  background-color: hsl(211, 34%, 27%);
 }
 
 #modal-footer > button:active {
-  background-color: hsl(47, 44%, 80%);
+  background-color: hsl(223, 43%, 8%);
 }
 
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translate(-50%, -110%);
+    transform: translate(0%, -110%);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0%);
+    transform: translate(0%, -10%);
   }
 }
 </style>

@@ -212,10 +212,10 @@ export default class App extends Vue {
         const sizeRatio =
           result.file?.size != undefined && result.file.size > 1000000
             ? 1000000 / result.file.size
-            : 1;
+            : 0.7;
         canvas.toBlob(
           function(blob) {
-            const file = new File([blob ? blob : new Blob()], "image.jpg", {
+            const file = new File([blob ? blob : new Blob()], "image.jpeg", {
               type: "image/jpeg",
               lastModified: new Date().getDate(),
             });
