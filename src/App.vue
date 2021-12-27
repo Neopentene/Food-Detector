@@ -33,6 +33,7 @@
         @click="resetUpload"
         class="theme-btn bot-rounded center-content"
         style="padding: 0.4rem; font-size: 0.85rem;"
+        :style="{ opacity: +srcAdded ? 1 : 0 }"
       >
         Clear Upload
       </div>
@@ -92,7 +93,7 @@ export default class App extends Vue {
 
   errorText: String = "No Errors";
 
-  Bearer: String = "Bearer c596d7293255a043c3bfbea974432951f5b4462a";
+  Bearer: String = "Bearer d7a57b22d03f660fd972df488fc5f6a8287b8c93";
 
   private imageFile!: File;
 
@@ -213,6 +214,24 @@ export default class App extends Vue {
           result.file?.size != undefined && result.file.size > 1000000
             ? 1000000 / result.file.size
             : 0.7;
+
+        /*
+        // Code to download the image
+        console.log(canvas.toDataURL("image/jpeg", sizeRatio));
+        const imageDownload = <HTMLAnchorElement>document.createElement("a");
+        imageDownload.href = canvas.toDataURL("image/jpeg", sizeRatio);
+        imageDownload.target = "_blank";
+        const nameArray = result.file
+          ? result.file.name.split(".")
+          : "image.jpg".split(".");
+        let name = "";
+        for (let pos = 0; pos < nameArray.length - 1; pos++) {
+          name += nameArray[pos] + ".";
+        }
+        imageDownload.download = name + "jpg";
+        imageDownload.click();
+        */
+
         canvas.toBlob(
           function(blob) {
             const file = new File([blob ? blob : new Blob()], "image.jpeg", {
